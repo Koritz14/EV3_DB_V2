@@ -1,9 +1,8 @@
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from pymongo.errors import ConnectionFailure, BulkWriteError
 import json
 import os
 
-os.system("cls")
 
 try:
     cliente = MongoClient(
@@ -18,6 +17,9 @@ try:
 except ConnectionFailure as e:
     print(f"Error de conexión a MongoDB: {e}")
 
+def cls():
+    os.system("cls")
+
 def insertar_json(db):
     for archivo in os.listdir():
         if archivo.endswith(".json"):
@@ -29,8 +31,29 @@ def insertar_json(db):
             if not isinstance(datos, list):
                 datos = [datos]
 
-            db[nombre_coleccion].insert_many(datos)
-            print(f"Datos insertados en la colección '{nombre_coleccion}'")
+            coleccion = db[nombre_coleccion]
+            cantidad_actual = coleccion.count_documents({})
+
+            if cantidad_actual > 0:
+                respuesta = input(
+                    f"La colección '{nombre_coleccion}' ya tiene {cantidad_actual} documento(s). "
+                    f"¿Reemplazar? (s/n): "
+                ).strip().lower()
+
+                if respuesta == "s":
+                    coleccion.drop()
+                else:
+                    print(f"Se omitió la carga de '{nombre_coleccion}'.")
+                    continue  # pasa al siguiente archivo del for, sin insertar
+
+            try:
+                coleccion.insert_many(datos)
+                print(f"Datos insertados en la colección '{nombre_coleccion}'")
+            except BulkWriteError as e:
+                print(f"Error al insertar en '{nombre_coleccion}': documentos duplicados u otro problema de escritura.")
+
+# Consultas
+# 
 
 
 # Menus
@@ -54,6 +77,9 @@ def menu(db):
 
         if opcion == "0":
             insertar_json(db)
+            input("\nPresiona Enter para volver al menú...")
+            cls()
+
         elif opcion == "1":
             pass  # TODO: consulta 1 - filtros
         elif opcion == "2":
