@@ -60,6 +60,13 @@ def insertar_json(db):
 
 # Consulta 1: Listar clientes inactivos 
 def consulta_1_clientes_inactivos(db):
+    """
+    Equivalente de consulta en MongoDB:
+    db.clientes_20.find(
+    { "Activo": false },
+    { "_id": 1, "nombre": 1, "fecha_registro": 1 }
+    )
+    """
     coleccion = db[NOMBRE_CLIENTES]
 
     filtro = {"Activo": False}
