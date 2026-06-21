@@ -13,15 +13,18 @@ try:
     cliente.admin.command('ping')
     print("Conexión exitosa a MongoDB")
     db = cliente["empresa"]
+    # --- Nombres de colecciones (modificar el día de la prueba según el JSON entregado) ---
+    NOMBRE_CLIENTES = "clientes_20"
+    NOMBRE_PEDIDOS = "pedidos_20"
 
 except ConnectionFailure as e:
     print(f"Error de conexión a MongoDB: {e}")
-
 def cls():
     os.system("cls")
 
-# Consultas
+# Herramientas/utilidades
 
+# Consultas
 # Cargar datos desde archivos JSON 
 def insertar_json(db):
     for archivo in os.listdir():
@@ -57,22 +60,22 @@ def insertar_json(db):
 
 # Consulta 1: Listar clientes inactivos 
 def consulta_1_clientes_inactivos(db):
-    """
-    Consulta MongoDB equivalente:
-    db.clientes.find(
-        { "Activo": false },
-        { "_id": 1, "nombre": 1, "fecha_registro": 1 }
-    )
-    """
-    print("\n--- Clientes inactivos ---")
+    coleccion = db[NOMBRE_CLIENTES]
 
     filtro = {"Activo": False}
     proyeccion = {"_id": 1, "nombre": 1, "fecha_registro": 1}
 
-    resultados = db.clientes.find(filtro, proyeccion)
+    resultados = coleccion.find(filtro, proyeccion)
 
+    contador = 0
     for cliente in resultados:
         print(cliente)
+        contador += 1
+
+    if contador == 0:
+        print("No se encontraron clientes inactivos.")
+
+    return contador
 
 # Menus
 # Menu principal
@@ -87,6 +90,7 @@ def menu(db):
     }
 
     while True:
+        cls()
         print("\n--- MENÚ ---")
         for clave, texto in opciones.items():
             print(f"[{clave}] {texto}")
@@ -96,13 +100,11 @@ def menu(db):
         if opcion == "0":
             insertar_json(db)
             input("\nPresiona Enter para volver al menú...")
-            cls()
 
         elif opcion == "1":
             consulta_1_clientes_inactivos(db)
             input("\nPresiona Enter para volver al menú...")
-            cls()
-            
+
         elif opcion == "2":
             pass  # TODO: consulta 2 - regex
         elif opcion == "3":
