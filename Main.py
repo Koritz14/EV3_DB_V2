@@ -62,27 +62,53 @@ def insertar_json(db):
 def consulta_1_clientes_inactivos(db):
     """
     Equivalente de consulta en MongoDB:
+    Consulta todos los clientes inactivos
     db.clientes_20.find(
     { "Activo": false },
     { "_id": 1, "nombre": 1, "fecha_registro": 1 }
     )
+
+    Consulta cliente inactivo por id
+    db.clientes_20.find(
+    { "Activo": false, "_id": "11111111-1"},
+    { "_id": 1, "nombre": 1, "fecha_registro": 1 }
+    )
     """
     coleccion = db[NOMBRE_CLIENTES]
-
-    filtro = {"Activo": False}
+    opcion = input("¿Desea filtrar por ID? (s/n): ").strip().lower()
     proyeccion = {"_id": 1, "nombre": 1, "fecha_registro": 1}
 
-    resultados = coleccion.find(filtro, proyeccion)
+    if opcion == "s":
+        id_cliente = input("Ingrese el ID del cliente: ").strip()
+        filtro = {"Activo": False, "_id": id_cliente}
 
-    contador = 0
-    for cliente in resultados:
-        print(cliente)
-        contador += 1
+        resultados = coleccion.find(filtro, proyeccion)
 
-    if contador == 0:
-        print("No se encontraron clientes inactivos.")
+        contador = 0
+        for cliente in resultados:
+            print(cliente)
+            contador += 1
 
-    return contador
+        if contador == 0:
+            print(f"No se encontró un cliente inactivo con ID '{id_cliente}'.")
+        return contador
+
+    elif opcion == "n":
+        filtro = {"Activo": False}
+        resultados = coleccion.find(filtro, proyeccion)
+
+        contador = 0
+        for cliente in resultados:
+            print(cliente)
+            contador += 1
+
+        if contador == 0:
+            print("No se encontraron clientes inactivos.")
+
+        return contador
+    else:
+        print("Opción inválida.")
+        return 0
 
 # Menus
 # Menu principal
