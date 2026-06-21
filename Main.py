@@ -20,6 +20,9 @@ except ConnectionFailure as e:
 def cls():
     os.system("cls")
 
+# Consultas
+
+# Cargar datos desde archivos JSON 
 def insertar_json(db):
     for archivo in os.listdir():
         if archivo.endswith(".json"):
@@ -52,9 +55,24 @@ def insertar_json(db):
             except BulkWriteError as e:
                 print(f"Error al insertar en '{nombre_coleccion}': documentos duplicados u otro problema de escritura.")
 
-# Consultas
-# 
+# Consulta 1: Listar clientes inactivos 
+def consulta_1_clientes_inactivos(db):
+    """
+    Consulta MongoDB equivalente:
+    db.clientes.find(
+        { "Activo": false },
+        { "_id": 1, "nombre": 1, "fecha_registro": 1 }
+    )
+    """
+    print("\n--- Clientes inactivos ---")
 
+    filtro = {"Activo": False}
+    proyeccion = {"_id": 1, "nombre": 1, "fecha_registro": 1}
+
+    resultados = db.clientes.find(filtro, proyeccion)
+
+    for cliente in resultados:
+        print(cliente)
 
 # Menus
 # Menu principal
@@ -81,7 +99,10 @@ def menu(db):
             cls()
 
         elif opcion == "1":
-            pass  # TODO: consulta 1 - filtros
+            consulta_1_clientes_inactivos(db)
+            input("\nPresiona Enter para volver al menú...")
+            cls()
+            
         elif opcion == "2":
             pass  # TODO: consulta 2 - regex
         elif opcion == "3":

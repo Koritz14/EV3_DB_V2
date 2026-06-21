@@ -1,0 +1,367 @@
+[
+  {
+    "_id": 1000,
+    "cliente_id": "11111111-1",
+    "fecha_pedido": "2025-09-01",
+    "monto_total": 120.5,
+    "productos": [
+      {
+        "producto_id": 101,
+        "cantidad": 1,
+        "precio": 100.0
+      },
+      {
+        "producto_id": 102,
+        "cantidad": 1,
+        "precio": 20.5
+      }
+    ]
+  },
+  {
+    "_id": 1101,
+    "cliente_id": "22222222-2",
+    "fecha_pedido": "2023-05-12",
+    "monto_total": 45.0,
+    "productos": [
+      {
+        "producto_id": 103,
+        "cantidad": 3,
+        "precio": 15.0
+      }
+    ]
+  },
+  {
+    "_id": 1001,
+    "cliente_id": "33333333-3",
+    "fecha_pedido": "2026-02-14",
+    "monto_total": 550.0,
+    "productos": [
+      {
+        "producto_id": 101,
+        "cantidad": 2,
+        "precio": 250.0
+      },
+      {
+        "producto_id": 104,
+        "cantidad": 1,
+        "precio": 50.0
+      }
+    ]
+  },
+  {
+    "_id": 2003,
+    "cliente_id": "22222222-2",
+    "fecha_pedido": "2025-05-02",
+    "monto_total": 144,
+    "productos": [
+      {
+        "producto_id": 108,
+        "cantidad": 1,
+        "precio": 144
+      }
+    ]
+  },
+  {
+    "_id": 2004,
+    "cliente_id": "70000012-7",
+    "fecha_pedido": "2022-05-15",
+    "monto_total": 193,
+    "productos": [
+      {
+        "producto_id": 105,
+        "cantidad": 1,
+        "precio": 65
+      },
+      {
+        "producto_id": 105,
+        "cantidad": 2,
+        "precio": 64
+      }
+    ]
+  },
+  {
+    "_id": 2005,
+    "cliente_id": "70000020-8",
+    "fecha_pedido": "2023-12-19",
+    "monto_total": 432,
+    "productos": [
+      {
+        "producto_id": 102,
+        "cantidad": 3,
+        "precio": 144
+      }
+    ]
+  },
+  {
+    "_id": 2006,
+    "cliente_id": "70000020-8",
+    "fecha_pedido": "2022-10-12",
+    "monto_total": 171,
+    "productos": [
+      {
+        "producto_id": 102,
+        "cantidad": 1,
+        "precio": 171
+      }
+    ]
+  },
+  {
+    "_id": 2007,
+    "cliente_id": "22222222-2",
+    "fecha_pedido": "2025-12-19",
+    "monto_total": 264,
+    "productos": [
+      {
+        "producto_id": 107,
+        "cantidad": 2,
+        "precio": 77
+      },
+      {
+        "producto_id": 106,
+        "cantidad": 2,
+        "precio": 55
+      }
+    ]
+  },
+  {
+    "_id": 2008,
+    "cliente_id": "55555555-5",
+    "fecha_pedido": "2022-10-16",
+    "monto_total": 535,
+    "productos": [
+      {
+        "producto_id": 101,
+        "cantidad": 1,
+        "precio": 132
+      },
+      {
+        "producto_id": 104,
+        "cantidad": 2,
+        "precio": 152
+      },
+      {
+        "producto_id": 107,
+        "cantidad": 1,
+        "precio": 99
+      }
+    ]
+  },
+  {
+    "_id": 2009,
+    "cliente_id": "11111111-1",
+    "fecha_pedido": "2025-09-05",
+    "monto_total": 83,
+    "productos": [
+      {
+        "producto_id": 107,
+        "cantidad": 1,
+        "precio": 20
+      },
+      {
+        "producto_id": 107,
+        "cantidad": 1,
+        "precio": 63
+      }
+    ]
+  },
+  {
+    "_id": 2010,
+    "cliente_id": "44444444-4",
+    "fecha_pedido": "2024-05-25",
+    "monto_total": 972,
+    "productos": [
+      {
+        "producto_id": 103,
+        "cantidad": 3,
+        "precio": 165
+      },
+      {
+        "producto_id": 106,
+        "cantidad": 3,
+        "precio": 159
+      }
+    ]
+  },
+  {
+    "_id": 2011,
+    "cliente_id": "55555555-5",
+    "fecha_pedido": "2023-07-18",
+    "monto_total": 884,
+    "productos": [
+      {
+        "producto_id": 104,
+        "cantidad": 2,
+        "precio": 97
+      },
+      {
+        "producto_id": 106,
+        "cantidad": 3,
+        "precio": 116
+      },
+      {
+        "producto_id": 106,
+        "cantidad": 2,
+        "precio": 171
+      }
+    ]
+  },
+  {
+    "_id": 2012,
+    "cliente_id": "66666666-6",
+    "fecha_pedido": "2025-12-18",
+    "monto_total": 383,
+    "productos": [
+      {
+        "producto_id": 103,
+        "cantidad": 1,
+        "precio": 110
+      },
+      {
+        "producto_id": 108,
+        "cantidad": 3,
+        "precio": 91
+      }
+    ]
+  },
+  {
+    "_id": 2013,
+    "cliente_id": "22222222-2",
+    "fecha_pedido": "2024-12-25",
+    "monto_total": 966,
+    "productos": [
+      {
+        "producto_id": 101,
+        "cantidad": 3,
+        "precio": 91
+      },
+      {
+        "producto_id": 109,
+        "cantidad": 3,
+        "precio": 189
+      },
+      {
+        "producto_id": 102,
+        "cantidad": 2,
+        "precio": 63
+      }
+    ]
+  },
+  {
+    "_id": 2014,
+    "cliente_id": "70000011-8",
+    "fecha_pedido": "2026-01-29",
+    "monto_total": 583,
+    "productos": [
+      {
+        "producto_id": 108,
+        "cantidad": 1,
+        "precio": 157
+      },
+      {
+        "producto_id": 106,
+        "cantidad": 3,
+        "precio": 142
+      }
+    ]
+  },
+  {
+    "_id": 2015,
+    "cliente_id": "70000017-1",
+    "fecha_pedido": "2024-11-04",
+    "monto_total": 438,
+    "productos": [
+      {
+        "producto_id": 105,
+        "cantidad": 3,
+        "precio": 50
+      },
+      {
+        "producto_id": 103,
+        "cantidad": 2,
+        "precio": 144
+      }
+    ]
+  },
+  {
+    "_id": 2016,
+    "cliente_id": "11111111-1",
+    "fecha_pedido": "2025-01-22",
+    "monto_total": 777,
+    "productos": [
+      {
+        "producto_id": 105,
+        "cantidad": 3,
+        "precio": 21
+      },
+      {
+        "producto_id": 109,
+        "cantidad": 3,
+        "precio": 52
+      },
+      {
+        "producto_id": 110,
+        "cantidad": 3,
+        "precio": 186
+      }
+    ]
+  },
+  {
+    "_id": 2017,
+    "cliente_id": "55555555-5",
+    "fecha_pedido": "2022-06-25",
+    "monto_total": 272,
+    "productos": [
+      {
+        "producto_id": 102,
+        "cantidad": 2,
+        "precio": 136
+      }
+    ]
+  },
+  {
+    "_id": 2018,
+    "cliente_id": "70000017-1",
+    "fecha_pedido": "2022-06-11",
+    "monto_total": 860,
+    "productos": [
+      {
+        "producto_id": 108,
+        "cantidad": 1,
+        "precio": 44
+      },
+      {
+        "producto_id": 108,
+        "cantidad": 2,
+        "precio": 117
+      },
+      {
+        "producto_id": 102,
+        "cantidad": 3,
+        "precio": 194
+      }
+    ]
+  },
+  {
+    "_id": 2019,
+    "cliente_id": "70000010-2",
+    "fecha_pedido": "2022-01-24",
+    "monto_total": 472,
+    "productos": [
+      {
+        "producto_id": 103,
+        "cantidad": 2,
+        "precio": 69
+      },
+      {
+        "producto_id": 108,
+        "cantidad": 2,
+        "precio": 134
+      },
+      {
+        "producto_id": 109,
+        "cantidad": 3,
+        "precio": 22
+      }
+    ]
+  }
+]
