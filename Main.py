@@ -58,7 +58,7 @@ def insertar_json(db):
             except BulkWriteError as e:
                 print(f"Error al insertar en '{nombre_coleccion}': documentos duplicados u otro problema de escritura.")
 
-# Consulta 1: Listar clientes inactivos 
+# Consulta 1: Listar clientes inactivos con filtros
 def consulta_1_clientes_inactivos(db):
     """
     Equivalente de consulta en MongoDB:
@@ -91,7 +91,6 @@ def consulta_1_clientes_inactivos(db):
 
         if contador == 0:
             print(f"No se encontró un cliente inactivo con ID '{id_cliente}'.")
-        return contador
 
     elif opcion == "n":
         filtro = {"Activo": False}
@@ -105,10 +104,39 @@ def consulta_1_clientes_inactivos(db):
         if contador == 0:
             print("No se encontraron clientes inactivos.")
 
-        return contador
     else:
         print("Opción inválida.")
-        return 0
+
+# Consulta 2: Buscar clientes por nombre o email (regex)
+def consulta_2_buscar_regex(db):
+    """
+    Equivalente en MongoDB:
+    db.clientes_20.find({
+        "$or": [
+            { "nombre": { "$regex": texto, "$options": "i" } },
+            { "email":  { "$regex": texto$, "$options": "i" } }
+        ]
+    })
+    """
+    coleccion = db[NOMBRE_CLIENTES]
+    texto = input("Ingrese nombre parcial o dominio de email a buscar (Ej: pedo, yahoo.com):").strip()
+
+    filtro = {
+        "$or": [
+            {"nombre": {"$regex": texto, "$options": "i"}},
+            {"email":  {"$regex": texto + "$", "$options": "i"}}
+        ]
+    }
+
+    resultados = coleccion.find(filtro)
+
+    contador = 0
+    for cliente in resultados:
+        print(cliente)
+        contador += 1
+
+    if contador == 0:
+        print(f"No se encontraron coincidencias para '{texto}'.")
 
 # Menus
 # Menu principal
@@ -139,7 +167,9 @@ def menu(db):
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "2":
-            pass  # TODO: consulta 2 - regex
+            consulta_2_buscar_regex(db)
+            input("\nPresiona Enter para volver al menú...")
+
         elif opcion == "3":
             pass  # TODO: consulta 3 - subdocumentos
         elif opcion == "4":
