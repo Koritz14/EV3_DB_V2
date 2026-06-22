@@ -162,7 +162,33 @@ def consulta_3_buscar_cliente_producto(db):
     
     if not encontrado:
         print(f"El cliente con ID '{cliente_id}' NO tiene el producto 101 en ningún pedido.")
+
+# Consulta 4: Cliente con mayor número de pedidos
+def consulta_4_cliente_mas_pedidos(db):
+    """
+    Equivalente en MongoDB:
+    db.pedidos_20.aggregate([
+        { $group: { _id: "$cliente_id", total: { $sum: 1 } } },
+        { $sort: { total: -1 } },
+        { $limit: 1 }
+    ])
+    """
+    coleccion = db[NOMBRE_PEDIDOS]
+    filtro = [
+        { "$group": { "_id": "$cliente_id", "total": { "$sum": 1 } } },
+        { "$sort": { "total": -1 } },
+        { "$limit": 1 }
+    ]
+
+    resultados = coleccion.aggregate(filtro)
+
+    for resultado in resultados:
+        print(f"El cliente con ID '{resultado['_id']}' tiene el mayor número de pedidos: {resultado['total']}.")
+        encontrado = True
     
+    if not encontrado:
+        print("No se encontraron pedidos en la colección.")
+        
 # Menus
 # Menu principal
 def menu(db):
@@ -200,7 +226,8 @@ def menu(db):
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "4":
-            pass  # TODO: consulta 4 - agregación
+            consulta_4_cliente_mas_pedidos(db)
+            input("\nPresiona Enter para volver al menú...")
         elif opcion == "9":
             print("Saliendo...")
             break
