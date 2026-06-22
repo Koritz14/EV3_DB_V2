@@ -124,7 +124,7 @@ def consulta_2_buscar_regex(db):
     filtro = {
         "$or": [
             {"nombre": {"$regex": texto, "$options": "i"}},
-            {"email":  {"$regex": texto + "$", "$options": "i"}}
+            {"email":  {"$regex": f"{texto}$", "$options": "i"}}
         ]
     }
 
@@ -138,6 +138,31 @@ def consulta_2_buscar_regex(db):
     if contador == 0:
         print(f"No se encontraron coincidencias para '{texto}'.")
 
+# Consulta 3: Verificar si un cliente tiene el producto por id
+def consulta_3_buscar_cliente_producto(db):
+    """
+    Equivalente en MongoDB:
+    db.pedidos_20.find({
+        "cliente_id": "11111111-1",
+        "productos.producto_id": 101
+    })
+    """
+    coleccion = db[NOMBRE_PEDIDOS]
+    cliente_id = input("Ingrese el ID del cliente a verificar: ").strip()
+    filtro = {
+        "cliente_id": cliente_id,
+        "productos.producto_id": 101
+    }
+
+    resultados = coleccion.find(filtro)
+
+    for pedido in resultados:
+        print(f"El cliente con ID '{cliente_id}' tiene el producto 101 en el pedido con ID '{pedido['_id']}'.")
+        encontrado = True
+    
+    if not encontrado:
+        print(f"El cliente con ID '{cliente_id}' NO tiene el producto 101 en ningún pedido.")
+    
 # Menus
 # Menu principal
 def menu(db):
@@ -171,7 +196,9 @@ def menu(db):
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "3":
-            pass  # TODO: consulta 3 - subdocumentos
+            consulta_3_buscar_cliente_producto(db)
+            input("\nPresiona Enter para volver al menú...")
+
         elif opcion == "4":
             pass  # TODO: consulta 4 - agregación
         elif opcion == "9":
