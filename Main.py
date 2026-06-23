@@ -12,10 +12,10 @@ try:
 
     cliente.admin.command('ping')
     print("Conexión exitosa a MongoDB")
-    db = cliente["empresa"]
+    db = cliente["prueba3"]
     # --- Nombres de colecciones (modificar el día de la prueba según el JSON entregado) ---
-    NOMBRE_CLIENTES = "clientes_20"
-    NOMBRE_PEDIDOS = "pedidos_20"
+    NOMBRE_INVITADOS = "invitados"
+    NOMBRE_EVENTOS = "eventos"
 
 except ConnectionFailure as e:
     print(f"Error de conexión a MongoDB: {e}")
@@ -58,132 +58,101 @@ def insertar_json(db):
             except BulkWriteError as e:
                 print(f"Error al insertar en '{nombre_coleccion}': documentos duplicados u otro problema de escritura.")
 
-# Consulta 1: Listar clientes inactivos con filtros
-def consulta_1_clientes_inactivos(db):
+# Consulta 1: Listar eventos por código
+def consulta_1_eventos_por_categoria(db):
     """
     Equivalente de consulta en MongoDB:
-    Consulta todos los clientes inactivos
-    db.clientes_20.find(
-    { "Activo": false },
-    { "_id": 1, "nombre": 1, "fecha_registro": 1 }
-    )
+    Consulta todos los invitados activos
 
-    Consulta cliente inactivo por id
-    db.clientes_20.find(
-    { "Activo": false, "_id": "11111111-1"},
-    { "_id": 1, "nombre": 1, "fecha_registro": 1 }
+    db.eventos.find(
+    { "codigo": "EVT-2025-003" },
+    { "_id": 0, "codigo": 1, "nombre":1, "fecha": 1 , "lugar": 1, "categoria": 1}
     )
     """
-    coleccion = db[NOMBRE_CLIENTES]
-    opcion = input("¿Desea filtrar por ID? (s/n): ").strip().lower()
-    proyeccion = {"_id": 1, "nombre": 1, "fecha_registro": 1}
+    coleccion = db[NOMBRE_EVENTOS]
 
-    if opcion == "s":
-        id_cliente = input("Ingrese el ID del cliente: ").strip()
-        filtro = {"Activo": False, "_id": id_cliente}
+    categoria = input("Ingrese el código del evento: ").strip()
+    filtro = {"codigo": categoria}
+    proyeccion = { "_id": 0, "codigo": 1, "nombre":1, "fecha": 1 , "lugar": 1, "categoria": 1}
 
-        resultados = coleccion.find(filtro, proyeccion)
+    resultados = coleccion.find(filtro, proyeccion)
 
-        contador = 0
-        for cliente in resultados:
-            print(cliente)
-            contador += 1
+    contador = 0
+    for evento in resultados:
+        print(evento)
+        contador += 1
 
-        if contador == 0:
-            print(f"No se encontró un cliente inactivo con ID '{id_cliente}'.")
+    if contador == 0:
+        print(f"No se encontraron eventos de la categoría '{categoria}'.")
+    
 
-    elif opcion == "n":
-        filtro = {"Activo": False}
-        resultados = coleccion.find(filtro, proyeccion)
-
-        contador = 0
-        for cliente in resultados:
-            print(cliente)
-            contador += 1
-
-        if contador == 0:
-            print("No se encontraron clientes inactivos.")
-
-    else:
-        print("Opción inválida.")
-
-# Consulta 2: Buscar clientes por nombre o email (regex)
+# Consulta 2: Buscar invitados por nombre o email (regex)
 def consulta_2_buscar_regex(db):
     """
     Equivalente en MongoDB:
-    db.clientes_20.find({
+    db.invitados.find({
         "$or": [
             { "nombre": { "$regex": texto, "$options": "i" } },
-            { "email":  { "$regex": texto$, "$options": "i" } }
+            { "correo":  { "$regex": texto$, "$options": "i" } }
         ]
     })
     """
-    coleccion = db[NOMBRE_CLIENTES]
+    coleccion = db[NOMBRE_INVITADOS]
     texto = input("Ingrese nombre parcial o dominio de email a buscar (Ej: pedo, yahoo.com):").strip()
 
     filtro = {
         "$or": [
             {"nombre": {"$regex": texto, "$options": "i"}},
-            {"email":  {"$regex": f"{texto}$", "$options": "i"}}
+            {"correo":  {"$regex": f"{texto}$", "$options": "i"}}
         ]
     }
 
     resultados = coleccion.find(filtro)
 
     contador = 0
-    for cliente in resultados:
-        print(cliente)
+    for invitado in resultados:
+        print(invitado)
         contador += 1
 
     if contador == 0:
         print(f"No se encontraron coincidencias para '{texto}'.")
 
-# Consulta 3: Verificar si un cliente tiene el producto por id
-def consulta_3_buscar_cliente_producto(db):
+# Consulta 3: Validación de acceso a eventos con búsqueda cruzada
+def consulta_3_Lista_invitados_confirmados_evento(db):
     """
-    Equivalente en MongoDB:
-    db.pedidos_20.find({
-        "cliente_id": "11111111-1",
-        "productos.producto_id": 101
-    })
     """
-    coleccion = db[NOMBRE_PEDIDOS]
-    cliente_id = input("Ingrese el ID del cliente a verificar: ").strip()
+    coleccion = db[NOMBRE_EVENTOS]
+    codigo_evento = input("Ingrese el código del evento: ").strip()
     filtro = {
-        "cliente_id": cliente_id,
-        "productos.producto_id": 101
+        "codigo": codigo_evento,
+        "invitados.estado": "confirmado"
     }
 
     resultados = coleccion.find(filtro)
 
-    for pedido in resultados:
-        print(f"El cliente con ID '{cliente_id}' tiene el producto 101 en el pedido con ID '{pedido['_id']}'.")
+    for invitado in resultados:
+        print(f"El invitado con rut '{invitado['rut']}' y nombre '{invitado['nombre']}' tiene el estado 'confirmado' para el evento '{codigo_evento}'.")
         encontrado = True
     
     if not encontrado:
-        print(f"El cliente con ID '{cliente_id}' NO tiene el producto 101 en ningún pedido.")
+        print(f"El cliente con ID '{codigo_evento}' NO tiene el producto 101 en ningún pedido.")
 
-# Consulta 4: Cliente con mayor número de pedidos
-def consulta_4_cliente_mas_pedidos(db):
+# Consulta 4: buscar a los 3 eventos con mayor número de invitados, 
+def consulta_4_Top3_eventos_mas_invitados(db):
+
+    """    
     """
-    Equivalente en MongoDB:
-    db.pedidos_20.aggregate([
-        { $group: { _id: "$cliente_id", total: { $sum: 1 } } },
-        { $sort: { total: -1 } },
-        { $limit: 1 }
-    ])
-    """
-    coleccion = db[NOMBRE_PEDIDOS]
+    coleccion = db[NOMBRE_EVENTOS]
     filtro = [
-        { "$group": { "_id": "$cliente_id", "total": { "$sum": 1 } } },
-        { "$sort": { "total": -1 } },
+        { "$group": { "_id": "$invitado_id", "total": { "$sum": 1 } } },
+        { "$sort": { "total": -1 } },   
         { "$limit": 1 }
     ]
 
     resultados = coleccion.aggregate(filtro)
 
     for resultado in resultados:
-        print(f"El cliente con ID '{resultado['_id']}' tiene el mayor número de pedidos: {resultado['total']}.")
+        print(f"El evento con ID '{resultado['codigo']}' tiene el mayor número de invitados: {resultado['total']}.")
         encontrado = True
     
     if not encontrado:
@@ -193,12 +162,12 @@ def consulta_4_cliente_mas_pedidos(db):
 # Menu principal
 def menu(db):
     opciones = {
-        "0": "Cargar datos desde JSON a MongoDB",
-        "1": "Listar clientes inactivos",
-        "2": "Buscar clientes por nombre o email (regex)",
-        "3": "Verificar si un cliente tiene el producto 101",
-        "4": "Cliente con mayor número de pedidos",
-        "9": "Salir"
+        "0": "Cargar datos desde JSON a MongoDB",                     # LISTO
+        "1": "Buscar evento por codigo",                              # LISTO    
+        "2": "Buscar invitados por nombre o email (regex)",           # LISTO
+        "3": "Verificar acceso a evento por estado (Confirmado)",     # FALTA
+        "4": "Invitado con mayor número de pedidos",                  # FALTA
+        "9": "Salir"    
     }
 
     while True:
@@ -214,7 +183,7 @@ def menu(db):
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "1":
-            consulta_1_clientes_inactivos(db)
+            consulta_1_eventos_por_categoria(db)
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "2":
@@ -222,11 +191,11 @@ def menu(db):
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "3":
-            consulta_3_buscar_cliente_producto(db)
+            consulta_3_Lista_invitados_confirmados_evento(db)
             input("\nPresiona Enter para volver al menú...")
 
         elif opcion == "4":
-            consulta_4_cliente_mas_pedidos(db)
+            consulta_4_Top3_eventos_mas_invitados(db)
             input("\nPresiona Enter para volver al menú...")
         elif opcion == "9":
             print("Saliendo...")
