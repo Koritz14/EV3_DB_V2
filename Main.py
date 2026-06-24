@@ -117,57 +117,122 @@ def consulta_2_buscar_regex(db):
     if contador == 0:
         print(f"No se encontraron coincidencias para '{texto}'.")
 
-# Consulta 3: Validación de acceso a eventos con búsqueda cruzada
+# Consulta 3: Listar invitados confirmados de un evento (con $lookup para traer datos del invitado)
 def consulta_3_Lista_invitados_confirmados_evento(db):
     """
+    Equivalente en MongoDB:
+    db.eventos.aggregate([
+        { "$match": { "codigo": codigo_evento } },
+        { "$unwind": "$invitados" },
+        { "$match": { "invitados.estado": "confirmado" } },
+        { "$lookup": {
+            "from": "invitados",
+            "localField": "invitados.rut",
+            "foreignField": "rut",
+            "as": "datos_invitado"
+        }},
+        { "$unwind": "$datos_invitado" },
+        { "$project": {
+            "_id": 0,
+            "rut": "$invitados.rut",
+            "nombre": "$datos_invitado.nombre",
+            "correo": "$datos_invitado.correo",
+            "estado": "$invitados.estado"
+        }}
+    ])
     """
     coleccion = db[NOMBRE_EVENTOS]
     codigo_evento = input("Ingrese el código del evento: ").strip()
-    filtro = {
-        "codigo": codigo_evento,
-        "invitados.estado": "confirmado"
-    }
 
-    resultados = coleccion.find(filtro)
-
-    for invitado in resultados:
-        print(f"El invitado con rut '{invitado['rut']}' y nombre '{invitado['nombre']}' tiene el estado 'confirmado' para el evento '{codigo_evento}'.")
-        encontrado = True
-    
-    if not encontrado:
-        print(f"El cliente con ID '{codigo_evento}' NO tiene el producto 101 en ningún pedido.")
-
-# Consulta 4: buscar a los 3 eventos con mayor número de invitados, 
-def consulta_4_Top3_eventos_mas_invitados(db):
-
-    """    
-    """
-    coleccion = db[NOMBRE_EVENTOS]
-    filtro = [
-        { "$group": { "_id": "$invitado_id", "total": { "$sum": 1 } } },
-        { "$sort": { "total": -1 } },   
-        { "$limit": 1 }
+    pipeline = [
+        {"$match": {"codigo": codigo_evento}},
+        {"$unwind": "$invitados"},
+        {"$match": {"invitados.estado": "confirmado"}},
+        {"$lookup": {
+            "from": NOMBRE_INVITADOS,
+            "localField": "invitados.rut",
+            "foreignField": "rut",
+            "as": "datos_invitado"
+        }},
+        {"$unwind": "$datos_invitado"},
+        {"$project": {
+            "_id": 0,
+            "rut": "$invitados.rut",
+            "nombre": "$datos_invitado.nombre",
+            "correo": "$datos_invitado.correo",
+            "estado": "$invitados.estado"
+        }}
     ]
 
-    resultados = coleccion.aggregate(filtro)
+    resultados = list(coleccion.aggregate(pipeline))
 
-    for resultado in resultados:
-        print(f"El evento con ID '{resultado['codigo']}' tiene el mayor número de invitados: {resultado['total']}.")
-        encontrado = True
-    
-    if not encontrado:
-        print("No se encontraron pedidos en la colección.")
+    if resultados:
+        print(f"\nInvitados confirmados en '{codigo_evento}':")
+        for inv in resultados:
+            print(f"  RUT: {inv['rut']} | Nombre: {inv['nombre']} | Correo: {inv['correo']}")
+    else:
+        print(f"No se encontraron invitados confirmados para el evento '{codigo_evento}'.")
+
+
+# Consulta 4: Top 3 eventos con mayor número de invitados confirmados
+def consulta_4_Top3_eventos_mas_invitados(db):
+    """
+    Equivalente en MongoDB:
+    db.eventos.aggregate([
+        { "$unwind": "$invitados" },
+        { "$match": { "invitados.estado": "confirmado" } },
+        { "$group": {
+            "_id": { "codigo": "$codigo", "nombre": "$nombre" },
+            "total_confirmados": { "$sum": 1 }
+        }},
+        { "$sort": { "total_confirmados": -1 } },
+        { "$limit": 3 },
+        { "$project": {
+            "_id": 0,
+            "codigo": "$_id.codigo",
+            "nombre": "$_id.nombre",
+            "total_confirmados": 1
+        }}
+    ])
+    """
+    coleccion = db[NOMBRE_EVENTOS]
+
+    pipeline = [
+        {"$unwind": "$invitados"},
+        {"$match": {"invitados.estado": "confirmado"}},
+        {"$group": {
+            "_id": {"codigo": "$codigo", "nombre": "$nombre"},
+            "total_confirmados": {"$sum": 1}
+        }},
+        {"$sort": {"total_confirmados": -1}},
+        {"$limit": 3},
+        {"$project": {
+            "_id": 0,
+            "codigo": "$_id.codigo",
+            "nombre": "$_id.nombre",
+            "total_confirmados": 1
+        }}
+    ]
+
+    resultados = list(coleccion.aggregate(pipeline))
+
+    if resultados:
+        print("\nTop 3 eventos con más invitados confirmados:")
+        for i, evt in enumerate(resultados, start=1):
+            print(f"  #{i} | {evt['codigo']} - {evt['nombre']} | Confirmados: {evt['total_confirmados']}")
+    else:
+        print("No se encontraron resultados.")
         
 # Menus
 # Menu principal
 def menu(db):
     opciones = {
-        "0": "Cargar datos desde JSON a MongoDB",                     # LISTO
-        "1": "Buscar evento por codigo",                              # LISTO    
-        "2": "Buscar invitados por nombre o email (regex)",           # LISTO
-        "3": "Verificar acceso a evento por estado (Confirmado)",     # FALTA
-        "4": "Invitado con mayor número de pedidos",                  # FALTA
-        "9": "Salir"    
+        "0": "Cargar datos desde JSON a MongoDB",
+        "1": "Buscar evento por código",
+        "2": "Buscar invitados por nombre o email (regex)",
+        "3": "Listar invitados confirmados de un evento",
+        "4": "Top 3 eventos con más invitados confirmados",
+        "9": "Salir"
     }
 
     while True:
